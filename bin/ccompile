@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec "$DART_SDK"/bin/dart ccompile.dart $@
