@@ -1,13 +1,7 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class ProjectHelper {
-  static Async<Project> create(Map map) {
-    return new Async<Project>(() {
-      return createSync(map);
-    });
-  }
-
-  static Project createSync(Map map) {
+  static Project create(Map map) {
     var parser = new ProjectParser();
     var project = parser.parse(map);
     if(parser.hasErrors) {
@@ -19,13 +13,7 @@ class ProjectHelper {
     return project;
   }
 
-  static Async<Project> load(String filepath, [String format]) {
-    return new Async<Project>(() {
-      return loadSync(filepath, format);
-    });
-  }
-
-  static Project loadSync(String filepath, [String format]) {
+  static Project load(String filepath, [String format]) {
     if(filepath == null || filepath.isEmpty) {
       throw new ArgumentError('filename: $filepath');
     }
@@ -35,13 +23,13 @@ class ProjectHelper {
     }
 
     if(format == null) {
-      var ext = new Path(filepath).extension;
+      var ext = pathos.extension(filepath);
       switch(ext.toLowerCase()) {
-        case 'json':
+        case '.json':
           format = 'json';
           break;
-        case 'yaml':
-        case 'yml':
+        case '.yaml':
+        case '.yml':
           format = 'yaml';
           break;
         default:
@@ -64,6 +52,6 @@ class ProjectHelper {
       throw('Invalid project structure. Project must be a Map.');
     }
 
-    return createSync(map);
+    return create(map);
   }
 }

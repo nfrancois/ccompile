@@ -1,5 +1,5 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 abstract class ProjectTool {
-  Async<ProcessResult> run(Project project, [String workingDirectory]);
+  ProcessResult run(Project project, [String workingDirectory]);
 }

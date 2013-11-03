@@ -1,17 +1,12 @@
-library ccompile;
+library ccompile.ccompile;
 
-import 'dart:async';
 import 'dart:collection';
-import 'dart:json' as JSON;
-import 'dart:isolate';
+import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-
-import 'package:async/async.dart';
-import 'package:yaml/yaml.dart';
-
-import 'src/file_finder/file_finder.dart';
+import 'package:ccompile/src/file_finder/file_finder.dart';
 import 'package:mezoni_parser/mezoni_parser.dart';
+import 'package:path/path.dart' as pathos;
+import 'package:yaml/yaml.dart';
 
 part 'src/cleaner.dart';
 part 'src/compiler_settings.dart';

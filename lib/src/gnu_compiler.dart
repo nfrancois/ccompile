@@ -1,17 +1,10 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class GnuCompiler implements ProjectTool {
-  Async<ProcessResult> run(Project project, [String workingDirectory]) {
-    return new Async<ProcessResult>(() {
-      Async<ProcessResult> current = Async.current;
-      var executable = project.compilerSettings.getExecutable('g++');
-      var arguments = _projectToArguments(project);
-      var process = Process.run(executable, arguments,
-        workingDirectory: workingDirectory);
-      new Async.fromFuture(process).then((ProcessResult result) {
-        current.result = result;
-      });
-    });
+  ProcessResult run(Project project, [String workingDirectory]) {
+    var executable = project.compilerSettings.getExecutable('g++');
+    var arguments = _projectToArguments(project);
+    return Process.runSync(executable, arguments, workingDirectory: workingDirectory);
   }
 
   List<String> _projectToArguments(Project project) {

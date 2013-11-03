@@ -1,56 +1,54 @@
-import 'dart:async';
+library ccompile.example.example_build_from_cmdline;
+
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:mirrors';
+import 'package:path/path.dart' as pathos;
 
-import 'package:async/async.dart';
-
-main() {
-  var projectPath = Utils.toAbsolutePath('../example/sample_extension.yaml');
-  var env = 'CCOMPILE';
-  var ccompile = 'ccompile.dart';
-  var script = Utils.findFile(env, ccompile);
-  if(script.isEmpty) {
-    Utils.errorFileNotFound(env, ccompile);
-  }
-
-  Utils.runDartScript([script, projectPath], {
-    'start': 'Building project "$projectPath"',
-    'success': 'Building complete successfully',
-    'error': 'Building complete with some errors'})
-    .then((exitCode) {});
+void main(List<String> args) {
+  Program.main(args);
 }
 
-class Utils {
-  static Async<int> runDartScript(List arguments, Map messages) {
-    return new Async(() {
-      var current = Async.current;
-      var dart = findDartVM();
-      var message = messages['start'];
+class Program {
+  static void main(List<String> args) {
+    var projectPath = toAbsolutePath('../example/sample_extension.yaml');
+    var env = 'CCOMPILE';
+    var ccompile = 'ccompile.dart';
+    var script = findFile(env, ccompile);
+    if(script.isEmpty) {
+      errorFileNotFound(env, ccompile);
+    }
+
+    var result = runDartScript([script, projectPath], {
+      'start': 'Building project "$projectPath"',
+      'success': 'Building complete successfully',
+      'error': 'Building complete with some errors'});
+
+    exit(result);
+  }
+
+  static int runDartScript(List arguments, Map messages) {
+    var dart = findDartVM();
+    var message = messages['start'];
+    if(!message.isEmpty) {
+      stdout.writeln(message);
+    }
+
+    var result = Process.runSync(dart, arguments);
+    if(result.exitCode == 0) {
+      var message = messages['success'];
       if(!message.isEmpty) {
-        Utils.writeString(message, stdout);
+        stdout.writeln(message);
+      }
+    } else {
+      var message = messages['error'];
+      if(!message.isEmpty) {
+        stdout.writeln(message);
       }
 
-      new Async.fromFuture(Process.run(dart, arguments))
-        .then((ProcessResult result) {
-        if(result.exitCode == 0) {
-          var message = messages['success'];
-          if(!message.isEmpty) {
-            Utils.writeString(message, stdout);
-          }
-        } else {
-          var message = messages['error'];
-          if(!message.isEmpty) {
-            Utils.writeString(message, stdout);
-          }
+      stdout.writeln(result.stdout);
+      stderr.writeln(result.stderr);
+    }
 
-          Utils.writeString(result.stdout, stdout);
-          Utils.writeString(result.stderr, stderr);
-        }
-
-        current.result = result.exitCode == 0 ? 0 : -1;
-      });
-    });
+    return result.exitCode == 0 ? 0 : -1;
   }
 
   static String findDartVM() {
@@ -71,7 +69,7 @@ class Utils {
   }
 
   static void errorFileNotFound(String env, String filename) {
-    writeString('Error: Cannot find "$filename" either in env["PATH"] nor in env["${env}"]', stderr);
+    stderr.writeln('Error: Cannot find "$filename" either in env["PATH"] nor in env["${env}"]');
     exit(-1);
   }
 
@@ -92,7 +90,7 @@ class Utils {
     }
 
     for(var item in envPath.split(separator)) {
-      var path = new Path('$item').append(filename).toNativePath();
+      var path = pathos.join(item, filename);
       if(new File(path).existsSync()) {
         return path;
       }
@@ -111,12 +109,11 @@ class Utils {
       return '';
     }
 
-    path = new Path('$path');
     if(subdir != null) {
-      path = path.append(subdir);
+      path = pathos.join(path, subdir);
     }
 
-    path = path.append(filename).toNativePath();
+    path = pathos.join(path, filename);
     if(new File(path).existsSync()) {
       return path;
     }
@@ -125,25 +122,11 @@ class Utils {
   }
 
   static String toAbsolutePath(String path) {
-    return new Path(Utils.getRootScriptDirectory()).join
-        (new Path(path)).toNativePath();
-  }
-
-  static String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
-
-  static void writeString(String string, IOSink stream) {
-    stream.writeln('$string');
+    return pathos.join(getRootScriptDirectory(), path);
   }
 
   static String getRootScriptDirectory() {
-    var reflection = currentMirrorSystem();
-    var file = '${reflection.isolate.rootLibrary.uri}';
-    if(Platform.operatingSystem == 'windows') {
-      file = file.replaceAll('file:///', '');
-    } else {
-      file = file.replaceAll('file://', '');
-    }
-
-    return new Path(file).directoryPath.toNativePath();
+    return pathos.dirname(Platform.script);
   }
 }
+

@@ -1,4 +1,4 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class LinkerSettings {
   List<String> arguments = [];

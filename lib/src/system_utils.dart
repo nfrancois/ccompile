@@ -1,4 +1,4 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class SystemUtils {
   static List<String> expandEnvironmentVars(List<String> strings) {
@@ -24,13 +24,5 @@ class SystemUtils {
     }
 
     return string;
-  }
-
-  static void writeStdout(String string) {
-    stdout.writeln('$string');
-  }
-
-  static void writeStderr(String string) {
-    stderr.writeln('$string');
   }
 }

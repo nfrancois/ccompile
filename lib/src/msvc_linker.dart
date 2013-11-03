@@ -1,27 +1,17 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class MsvcLinker implements ProjectTool {
-  Async<ProcessResult> run(Project project, [String workingDirectory]) {
-    return new Async<ProcessResult>(() {
-      Async<ProcessResult> current = Async.current;
-      var bits = project.getBits(WindowsUtils.getSystemBits());
-      MsvcUtils.getEnvironment(bits)
-      .then((env) {
-        Map<String, String> environment = {};
-        if(env != null) {
-          environment = env;
-        }
+  ProcessResult run(Project project, [String workingDirectory]) {
+  var bits = project.getBits(WindowsUtils.getSystemBits());
+  var env = MsvcUtils.getEnvironment(bits);
+  Map<String, String> environment = {};
+  if(env != null) {
+    environment = env;
+  }
 
-        var executable = WindowsUtils.findFileInEnvPath(env, 'link.exe');
-        var arguments = _projectToArguments(project);
-        var process = Process.run(executable, arguments,
-          environment: environment, workingDirectory: workingDirectory);
-        new Async.fromFuture(process)
-        .then((ProcessResult result) {
-          current.result = result;
-        });
-      });
-    });
+  var executable = WindowsUtils.findFileInEnvPath(env, 'link.exe');
+  var arguments = _projectToArguments(project);
+  return Process.runSync(executable, arguments, environment: environment, workingDirectory: workingDirectory);
   }
 
   List<String> _projectToArguments(Project project) {

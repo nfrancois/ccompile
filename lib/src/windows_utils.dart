@@ -1,4 +1,4 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class WindowsUtils {
   static String findFileInEnvPath(Map<String, String> env, String filename) {

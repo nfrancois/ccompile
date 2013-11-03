@@ -1,27 +1,23 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class Cleaner implements ProjectTool {
-  Async<ProcessResult> run(Project project, [String workingDirectory]) {
+  ProcessResult run(Project project, [String workingDirectory]) {
     return _clean(project, workingDirectory);
   }
 
-  Async<ProcessResult> _clean(Project project, String workingDirectory) {
-    return new Async<ProcessResult>(() {
-      if(workingDirectory == null) {
-        workingDirectory = Directory.current.path;
+  ProcessResult _clean(Project project, String workingDirectory) {
+    if(workingDirectory == null) {
+      workingDirectory = Directory.current.path;
+    }
+
+    var files = FileFinder.find(workingDirectory, project.clean);
+    files.forEach((file) {
+      var fp = new File(file);
+      if(fp.existsSync()) {
+        fp.deleteSync();
       }
-
-      var finder = FileFinder.find(workingDirectory, project.clean);
-      new Async.fromFuture(finder).then((files) {
-        files.forEach((file) {
-          var fp = new File(file);
-          if(fp.existsSync()) {
-            fp.deleteSync();
-          }
-        });
-      });
-
-      return new ProjectToolResult();
     });
+
+    return new ProjectToolResult();
   }
 }

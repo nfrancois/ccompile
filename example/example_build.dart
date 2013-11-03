@@ -1,79 +1,57 @@
-library example_build;
+library ccompile.example.example_build;
 
-import 'dart:async';
 import 'dart:io';
-import 'dart:mirrors';
-
-import 'package:async/async.dart';
 import 'package:ccompile/ccompile.dart';
+import 'package:path/path.dart' as pathos;
 
-void main() {
-  new Async(() {
-    var projectPath = Utils.toAbsolutePath('../example/sample_extension.yaml');
-    Utils.buildProject(projectPath, {
-      'start': 'Building project "$projectPath"',
-      'success': 'Building complete successfully',
-      'error': 'Building complete with some errors'})
-    .then((result) {
-      exit(result);
-    });
-  });
+void main(List<String> args) {
+  Program.main(args);
 }
 
-class Utils {
-  static Async<int> buildProject(projectPath, Map messages) {
-    return new Async<int>(() {
-      Async<int> current = Async.current;
-      var workingDirectory = new Path(projectPath).directoryPath.toNativePath();
-      var message = messages['start'];
+class Program {
+  static void main(List<String> args) {
+    var projectPath = toAbsolutePath('../example/sample_extension.yaml');
+    var result = Program.buildProject(projectPath, {
+      'start': 'Building project "$projectPath"',
+      'success': 'Building complete successfully',
+      'error': 'Building complete with some errors'});
+
+    exit(result);
+  }
+
+  static int buildProject(projectPath, Map messages) {
+    var workingDirectory = pathos.dirname(projectPath);
+    var message = messages['start'];
+    if(!message.isEmpty) {
+      stdout.writeln(message);
+    }
+
+    var builder = new ProjectBuilder();
+    var project = builder.loadProject(projectPath);
+    var result = builder.buildAndClean(project, workingDirectory);
+    if(result.exitCode == 0) {
+      var message = messages['success'];
       if(!message.isEmpty) {
-        Utils.writeString(message, stdout);
+        stdout.writeln(message);
+      }
+    } else {
+      var message = messages['error'];
+      if(!message.isEmpty) {
+        stderr.writeln(message);
       }
 
-      var builder = new ProjectBuilder();
-      builder.loadProject(projectPath)
-      .then((project) {
-        builder.buildAndClean(project, workingDirectory)
-        .then((result) {
-          if(result.exitCode == 0) {
-            var message = messages['success'];
-            if(!message.isEmpty) {
-              Utils.writeString(message, stdout);
-            }
-          } else {
-            var message = messages['error'];
-            if(!message.isEmpty) {
-              Utils.writeString(message, stdout);
-            }
+      stdout.writeln(result.stdout);
+      stderr.writeln(result.stderr);
+    }
 
-            Utils.writeString(result.stdout, stdout);
-            Utils.writeString(result.stderr, stderr);
-          }
-
-          current.result = result.exitCode == 0 ? 0 : -1;
-        });
-      });
-    });
+    return result.exitCode == 0 ? 0 : -1;
   }
 
   static String toAbsolutePath(String path) {
-    return new Path(Utils.getRootScriptDirectory()).join
-        (new Path(path)).toNativePath();
-  }
-
-  static void writeString(String string, IOSink stream) {
-    stream.writeln('$string');
+    return pathos.join(getRootScriptDirectory(), path);
   }
 
   static String getRootScriptDirectory() {
-    var reflection = currentMirrorSystem();
-    var file = '${reflection.isolate.rootLibrary.uri}';
-    if(Platform.operatingSystem == 'windows') {
-      file = file.replaceAll('file:///', '');
-    } else {
-      file = file.replaceAll('file://', '');
-    }
-
-    return new Path(file).directoryPath.toNativePath();
+    return pathos.dirname(Platform.script);
   }
 }

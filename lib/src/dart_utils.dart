@@ -1,4 +1,4 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class DartUtils {
   static String getSdkFolder() {

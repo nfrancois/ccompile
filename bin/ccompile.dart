@@ -1,18 +1,20 @@
-library ccompile_tool;
+library ccompile.bin.ccompile;
 
-import 'dart:async';
 import 'dart:io';
-
 import 'package:args/args.dart';
-import 'package:async/async.dart';
 import 'package:ccompile/ccompile.dart';
+import 'package:path/path.dart' as pathos;
 
-main() {
-  new CcompileTool()
-  .run()
-  .then((result) {
+void main(List<String> args) {
+  Program.main(args);
+}
+
+class Program {
+  static void main(List<String> args) {
+    var tool = new CcompileTool();
+    var result = tool.run();
     exit(result);
-  });
+  }
 }
 
 class CcompileTool {
@@ -34,20 +36,14 @@ class CcompileTool {
 
   ArgParser _parser;
 
-  Async<int> run() {
-    return new Async(() {
-      var current = Async.current;
-      if(_parse()) {
-        if(_prepare()) {
-          _buildAsync()
-          .then((result) {
-            current.result = result;
-          });
-        }
+  int run() {
+    if(_parse()) {
+      if(_prepare()) {
+        return _build();
       }
+    }
 
-      return -1;
-    });
+    return -1;
   }
 
   bool _parse() {
@@ -76,7 +72,7 @@ class CcompileTool {
     try {
       argResults = _parser.parse(arguments);
     } on FormatException catch (fe) {
-      SystemUtils.writeStderr(fe.message);
+      stderr.writeln(fe.message);
       _printUsage();
       return false;
     } catch(e) {
@@ -84,8 +80,8 @@ class CcompileTool {
     }
 
     if(argResults.rest.length != 0) {
-      SystemUtils.writeStderr('Illegal arguments:');
-      argResults.rest.forEach((arg) => SystemUtils.writeStderr(arg));
+      stderr.writeln('Illegal arguments:');
+      argResults.rest.forEach((arg) => stderr.writeln(arg));
       _printUsage();
       return false;
     }
@@ -100,43 +96,35 @@ class CcompileTool {
   bool _prepare() {
     projectDirectory = _getDirectoryPath(projectArgument);
     if(projectDirectory == null) {
-      SystemUtils.writeStderr('Project file "$projectArgument" not found.');
+      stderr.writeln('Project file "$projectArgument" not found.');
       return false;
     }
 
-    projectFileName = new Path(projectArgument).filename;
-    projectFullPath = new Path(projectDirectory).append(projectFileName)
-      .toNativePath();
+
+    projectFileName = pathos.basename(projectArgument);
+    projectFullPath = pathos.join(projectDirectory, projectFileName);
     return true;
   }
 
-  Async<int> _buildAsync() {
-    return new Async<int>(() {
-      Async<int> current = Async.current;
-      var builder = new ProjectBuilder();
-      builder.loadProject(projectFullPath, format)
-      .then((project) {
-        builder.customBuild(project, projectDirectory, compile, link, clean)
-        .then((ProcessResult result) {
-          if(result.exitCode != 0) {
-            SystemUtils.writeStdout(result.stdout);
-            SystemUtils.writeStderr(result.stderr);
-            current.result = -1;
-          } else {
-            current.result = 0;
-          }
-        });
-      });
-    });
+  int _build() {
+    var builder = new ProjectBuilder();
+    var project = builder.loadProject(projectFullPath, format);
+    var result = builder.customBuild(project, projectDirectory, compile, link, clean);
+    if(result.exitCode != 0) {
+      stdout.writeln(result.stdout);
+      stderr.writeln(result.stderr);
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
   String _getDirectoryPath(String filename) {
-    var path = new Path(filename);
-    if(!path.isAbsolute) {
-      var curDir = Directory.current;
-      var curDirPath = new Path(curDir.path);
-      path = curDirPath.join(path);
-      filename = path.toNativePath();
+    var path = filename;
+    if(!pathos.isAbsolute(path)) {
+      var curDirPath = Directory.current.path;
+      pathos.join(curDirPath, path);
+      filename = path;
     }
 
     var file = new File(filename);
@@ -144,13 +132,13 @@ class CcompileTool {
       return  null;
     }
 
-    return file.directory.path;
+    return file.parent.path;
   }
 
   String _printUsage() {
-    SystemUtils.writeStdout('');
-    SystemUtils.writeStdout('Usage: ccompile.dart project [options]');
-    SystemUtils.writeStdout('Options:');
-    SystemUtils.writeStdout(_parser.getUsage());
+    stdout.writeln('');
+    stdout.writeln('Usage: ccompile.dart project [options]');
+    stdout.writeln('Options:');
+    stdout.writeln(_parser.getUsage());
   }
 }

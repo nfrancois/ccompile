@@ -1,17 +1,10 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class GnuLinker implements ProjectTool {
-  Async<ProcessResult> run(Project project, [String workingDirectory]) {
-    return new Async<ProcessResult>(() {
-      Async<ProcessResult> current = Async.current;
-      var executable = 'gcc';
-      var arguments = _projectToArguments(project);
-      var process = Process.run(executable, arguments,
-        workingDirectory: workingDirectory);
-      new Async.fromFuture(process).then((ProcessResult result) {
-        current.result = result;
-      });
-    });
+  ProcessResult run(Project project, [String workingDirectory]) {
+    var executable = 'gcc';
+    var arguments = _projectToArguments(project);
+    return Process.runSync(executable, arguments, workingDirectory: workingDirectory);
   }
 
   List<String> _projectToArguments(Project project) {
@@ -36,10 +29,11 @@ class GnuLinker implements ProjectTool {
     var inputFiles = SystemUtils.expandEnvironmentVars(settings.inputFiles);
     inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
     inputFiles.forEach((inputFile) {
-      var ext = new Path(inputFile).extension;
+      var ext = pathos.extension(inputFile);
       if(ext.isEmpty) {
         inputFile = '$inputFile.o';
       }
+
       arguments.add('$inputFile');
     });
 

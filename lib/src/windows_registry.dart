@@ -1,40 +1,30 @@
-part of ccompile;
+part of ccompile.ccompile;
 
 class WindowsRegistry {
-  static Async<String> query(String keyName, List<String> arguments) {
-    return new Async<String>(() {
-      Async<String> current = Async.current;
-      new Async.fromFuture(Process.run('reg query "$keyName"', arguments))
-      .then((ProcessResult result) {
-        if(result.exitCode != 0) {
-          return null;
-        }
+  static String query(String keyName, List<String> arguments) {
+    var result = Process.runSync('reg query "$keyName"', arguments);
+    if(result.exitCode != 0) {
+      return null;
+    }
 
-        var regVersion = '\r\n! REG.EXE VERSION ';
-        var str = result.stdout;
-        if(str.startsWith(regVersion)) {
-          str = str.substring(regVersion.length + 7);
-        } else {
-          str = str.substring(2);
-        }
+    var regVersion = '\r\n! REG.EXE VERSION ';
+    var str = result.stdout;
+    if(str.startsWith(regVersion)) {
+      str = str.substring(regVersion.length + 7);
+    } else {
+      str = str.substring(2);
+    }
 
-        current.result = str;
-      });
-    });
+    return str;
   }
 
-  static Async<WindowsRegistryKey> queryAllKeys(String keyName) {
-    return new Async<WindowsRegistryKey>(() {
-      Async<WindowsRegistryKey> current = Async.current;
-      query(keyName, ['/s'])
-      .then((result) {
-        if(result == null) {
-          return null;
-        }
+  static WindowsRegistryKey queryAllKeys(String keyName) {
+    var result = query(keyName, ['/s']);
+    if(result == null) {
+      return null;
+     }
 
-        current.result = _parseQuerySubkeys(keyName, result);
-      });
-    });
+     return _parseQuerySubkeys(keyName, result);
   }
 
   static WindowsRegistryKey _parseQuerySubkeys(String queryKey, String queryResult) {

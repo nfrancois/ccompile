@@ -1,48 +1,28 @@
 part of file_finder;
 
 class FilteredDirectoryLister {
-  static List _metachars =
-      const ['[', ']', '\\', '^', r'$', '|', '+', '(', ')'];
+  static const List _metachars = const ['[', ']', '\\', '^', r'$', '|', '+', '(', ')'];
 
-  //DirectoryLister _lister;
+  bool recursive;
 
-  Stream<FileSystemEntity> _lister;
+  Directory _directory;
 
-  Function _onData;
-  Function _onDone;
-  Function _onError;
   Function _onDir;
+
   Function _onFile;
 
   List<List<Map>> _variants = [];
 
-  FilteredDirectoryLister(Directory dir, List<String> filemasks,
-      [bool recursive = false, bool ignoreCase]) {
-    _lister = dir.list(recursive: recursive);
-
-    void onData(entry) {
-      var path = entry.path;
-      if(FileSystemEntity.isDirectorySync(path)) {
-        _filterDir(entry.path);
-      } else if(FileSystemEntity.isFileSync(path)) {
-        _filterFile(entry.path);
-      }
+  FilteredDirectoryLister(Directory directory, List<String> filemasks, [this.recursive = false, bool ignoreCase]) {
+    if(directory == null) {
+      throw new ArgumentError('directory: $directory');
     }
 
-    void onDone() {
-      if(_onDone != null) {
-        _onDone();
-      }
+    if(filemasks == null) {
+      throw new ArgumentError('filemasks: $filemasks');
     }
 
-    void onError(error) {
-      if(_onError != null) {
-        _onError(error);
-      }
-    }
-
-    _lister.listen(onData, onError: onError, onDone: onDone);
-
+    _directory = directory;
     if(ignoreCase == null && Platform.operatingSystem == 'windows') {
       ignoreCase = true;
     } else {
@@ -54,20 +34,24 @@ class FilteredDirectoryLister {
     }
   }
 
+  void list() {
+    var list = _directory.listSync(recursive: recursive);
+    for(var entry in list) {
+      var path = entry.path;
+      if(FileSystemEntity.isDirectorySync(path)) {
+        _filterDir(entry.path);
+      } else if(FileSystemEntity.isFileSync(path)) {
+        _filterFile(entry.path);
+      }
+    }
+  }
+
   void set onDir(void onDir(String dir)) {
     _onDir = onDir;
   }
 
   void set onFile(void onFile(String file)) {
     _onFile = onFile;
-  }
-
-  void set onDone(void onDone()) {
-    _onDone = onDone;
-  }
-
-  void set onError(void onError(e)) {
-    _onError = onError;
   }
 
   void _filterDir(String dir) {
@@ -150,8 +134,8 @@ class FilteredDirectoryLister {
   }
 
   String _getFilename(String path) {
-    int unix = path.lastIndexOf('/');
-    int windows = path.lastIndexOf('\\');
+    var unix = path.lastIndexOf('/');
+    var windows = path.lastIndexOf('\\');
     if(unix == -1 && windows == -1) {
       return '';
     }

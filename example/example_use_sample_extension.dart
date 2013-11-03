@@ -1,6 +1,5 @@
-library example_use_sample_extension;
+library ccompile.example.example_use_sample_extension;
 
-import "dart:collection";
 import "sample_extension.dart";
 
 void main() {
