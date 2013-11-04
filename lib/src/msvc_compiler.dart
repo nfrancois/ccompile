@@ -3,15 +3,9 @@ part of ccompile.ccompile;
 class MsvcCompiler implements ProjectTool {
   ProcessResult run(Project project, [String workingDirectory]) {
     var bits = project.getBits(WindowsUtils.getSystemBits());
-    var env = MsvcUtils.getEnvironment(bits);
-    Map<String, String> environment = {};
-    if(env != null) {
-      environment = env;
-    }
-
-    var executable = WindowsUtils.findFileInEnvPath(env, 'cl.exe');
     var arguments = _projectToArguments(project);
-    return Process.runSync(executable, arguments, environment: environment, workingDirectory: workingDirectory);
+    var compiler = new Msvc(bits: bits);
+    return compiler.run(arguments, workingDirectory: workingDirectory);
   }
 
   List<String> _projectToArguments(Project project) {
@@ -21,7 +15,7 @@ class MsvcCompiler implements ProjectTool {
     var inputFiles = SystemUtils.expandEnvironmentVars(settings.inputFiles);
     inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
     inputFiles.forEach((inputFile) {
-      arguments.add('"$inputFile"');
+      arguments.add('$inputFile');
     });
 
     var includes = SystemUtils.expandEnvironmentVars(settings.includes);

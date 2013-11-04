@@ -43,7 +43,7 @@ class CcompileTool {
       }
     }
 
-    return -1;
+    return 1;
   }
 
   bool _parse() {
@@ -72,7 +72,7 @@ class CcompileTool {
     try {
       argResults = _parser.parse(arguments);
     } on FormatException catch (fe) {
-      stderr.writeln(fe.message);
+      SystemUtils.writeString(fe.message, stderr);
       _printUsage();
       return false;
     } catch(e) {
@@ -80,8 +80,8 @@ class CcompileTool {
     }
 
     if(argResults.rest.length != 0) {
-      stderr.writeln('Illegal arguments:');
-      argResults.rest.forEach((arg) => stderr.writeln(arg));
+      SystemUtils.writeString('Illegal arguments:', stderr);
+      argResults.rest.forEach((arg) => SystemUtils.writeString(arg, stderr));
       _printUsage();
       return false;
     }
@@ -96,7 +96,7 @@ class CcompileTool {
   bool _prepare() {
     projectDirectory = _getDirectoryPath(projectArgument);
     if(projectDirectory == null) {
-      stderr.writeln('Project file "$projectArgument" not found.');
+      SystemUtils.writeString('Project file "$projectArgument" not found.', stderr);
       return false;
     }
 
@@ -111,9 +111,7 @@ class CcompileTool {
     var project = builder.loadProject(projectFullPath, format);
     var result = builder.customBuild(project, projectDirectory, compile, link, clean);
     if(result.exitCode != 0) {
-      stdout.writeln(result.stdout);
-      stderr.writeln(result.stderr);
-      return -1;
+      return 1;
     } else {
       return 0;
     }
@@ -136,9 +134,9 @@ class CcompileTool {
   }
 
   String _printUsage() {
-    stdout.writeln('');
-    stdout.writeln('Usage: ccompile.dart project [options]');
-    stdout.writeln('Options:');
-    stdout.writeln(_parser.getUsage());
+    print('');
+    print('Usage: ccompile.dart project [options]');
+    print('Options:');
+    print(_parser.getUsage());
   }
 }

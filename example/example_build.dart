@@ -10,7 +10,8 @@ void main(List<String> args) {
 
 class Program {
   static void main(List<String> args) {
-    var projectPath = toAbsolutePath('../example/sample_extension.yaml');
+    var basePath = Directory.current.path;
+    var projectPath = toAbsolutePath('../example/sample_extension.yaml', basePath);
     var result = Program.buildProject(projectPath, {
       'start': 'Building project "$projectPath"',
       'success': 'Building complete successfully',
@@ -23,7 +24,7 @@ class Program {
     var workingDirectory = pathos.dirname(projectPath);
     var message = messages['start'];
     if(!message.isEmpty) {
-      stdout.writeln(message);
+      print(message);
     }
 
     var builder = new ProjectBuilder();
@@ -32,23 +33,25 @@ class Program {
     if(result.exitCode == 0) {
       var message = messages['success'];
       if(!message.isEmpty) {
-        stdout.writeln(message);
+        print(message);
       }
     } else {
       var message = messages['error'];
       if(!message.isEmpty) {
-        stderr.writeln(message);
+        print(message);
       }
-
-      stdout.writeln(result.stdout);
-      stderr.writeln(result.stderr);
     }
 
-    return result.exitCode == 0 ? 0 : -1;
+    return result.exitCode == 0 ? 0 : 1;
   }
 
-  static String toAbsolutePath(String path) {
-    return pathos.join(getRootScriptDirectory(), path);
+  static String toAbsolutePath(String path, String base) {
+    if(pathos.isAbsolute(path)) {
+      return path;
+    }
+
+    path = pathos.join(base, path);
+    return pathos.absolute(path);
   }
 
   static String getRootScriptDirectory() {

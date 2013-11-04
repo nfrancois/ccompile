@@ -4,7 +4,16 @@ class GnuCompiler implements ProjectTool {
   ProcessResult run(Project project, [String workingDirectory]) {
     var executable = project.compilerSettings.getExecutable('g++');
     var arguments = _projectToArguments(project);
-    return Process.runSync(executable, arguments, workingDirectory: workingDirectory);
+    var compiler;
+    if(executable == 'g++') {
+      compiler = new Gpp();
+    } else if(executable == 'gcc') {
+      compiler = new Gcc();
+    } else {
+      throw new StateError('Unsupported compiler executable $executable');
+    }
+
+    return compiler.run(arguments, workingDirectory: workingDirectory);
   }
 
   List<String> _projectToArguments(Project project) {

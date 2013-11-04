@@ -2,9 +2,9 @@ part of ccompile.ccompile;
 
 class GnuLinker implements ProjectTool {
   ProcessResult run(Project project, [String workingDirectory]) {
-    var executable = 'gcc';
     var arguments = _projectToArguments(project);
-    return Process.runSync(executable, arguments, workingDirectory: workingDirectory);
+    var linker = new Gcc();
+    return linker.run(arguments, workingDirectory: workingDirectory);
   }
 
   List<String> _projectToArguments(Project project) {

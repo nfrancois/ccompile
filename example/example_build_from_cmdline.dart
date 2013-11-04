@@ -9,7 +9,8 @@ void main(List<String> args) {
 
 class Program {
   static void main(List<String> args) {
-    var projectPath = toAbsolutePath('../example/sample_extension.yaml');
+    var basePath = Directory.current.path;
+    var projectPath = toAbsolutePath('../example/sample_extension.yaml', basePath);
     var env = 'CCOMPILE';
     var ccompile = 'ccompile.dart';
     var script = findFile(env, ccompile);
@@ -29,26 +30,23 @@ class Program {
     var dart = findDartVM();
     var message = messages['start'];
     if(!message.isEmpty) {
-      stdout.writeln(message);
+      print(message);
     }
 
     var result = Process.runSync(dart, arguments);
     if(result.exitCode == 0) {
       var message = messages['success'];
       if(!message.isEmpty) {
-        stdout.writeln(message);
+        print(message);
       }
     } else {
       var message = messages['error'];
       if(!message.isEmpty) {
-        stdout.writeln(message);
+        print(message);
       }
-
-      stdout.writeln(result.stdout);
-      stderr.writeln(result.stderr);
     }
 
-    return result.exitCode == 0 ? 0 : -1;
+    return result.exitCode == 0 ? 0 : 1;
   }
 
   static String findDartVM() {
@@ -69,7 +67,7 @@ class Program {
   }
 
   static void errorFileNotFound(String env, String filename) {
-    stderr.writeln('Error: Cannot find "$filename" either in env["PATH"] nor in env["${env}"]');
+    writeString('Error: Cannot find "$filename" either in env["PATH"] nor in env["${env}"]', stderr);
     exit(-1);
   }
 
@@ -121,12 +119,23 @@ class Program {
     return '';
   }
 
-  static String toAbsolutePath(String path) {
-    return pathos.join(getRootScriptDirectory(), path);
+  static String toAbsolutePath(String path, String base) {
+    if(pathos.isAbsolute(path)) {
+      return path;
+    }
+
+    path = pathos.join(base, path);
+    return pathos.absolute(path);
   }
 
   static String getRootScriptDirectory() {
     return pathos.dirname(Platform.script);
+  }
+
+  static final String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
+
+  static void writeString(String text, IOSink sink) {
+    sink.write('text$newline');
   }
 }
 

@@ -17,15 +17,21 @@ class ProjectBuilder {
   }
 
   ProcessResult compile(Project project, [String workingDirectory]) {
-    return getCompiler().run(project, workingDirectory);
+    var result = getCompiler().run(project, workingDirectory);
+    _writeResult(result);
+    return result;
   }
 
   ProcessResult link(Project project, [String workingDirectory]) {
-    return getLinker().run(project, workingDirectory);
+    var result = getLinker().run(project, workingDirectory);
+    _writeResult(result);
+    return result;
   }
 
   ProcessResult clean(Project project, [String workingDirectory]) {
-    return getCleaner().run(project, workingDirectory);
+    var result = getCleaner().run(project, workingDirectory);
+    _writeResult(result);
+    return result;
   }
 
   ProcessResult buildAndClean(Project project, [String workingDirectory]) {
@@ -99,5 +105,18 @@ class ProjectBuilder {
 
   void _unsupportedPlatform() {
     throw('Unsupported target $_platform.');
+  }
+
+  void _writeResult(ProcessResult result) {
+    var message = result.stdout.toString();
+    if(!message.isEmpty) {
+      print(message);
+      //SystemUtils.writeString(message, stdout);
+    }
+
+    message = result.stderr.toString();
+    if(!message.isEmpty) {
+      SystemUtils.writeString(message, stderr);
+    }
   }
 }

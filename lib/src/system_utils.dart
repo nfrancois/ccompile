@@ -25,4 +25,10 @@ class SystemUtils {
 
     return string;
   }
+
+  static final String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
+
+  static void writeString(String text, IOSink sink) {
+    sink.write('$text$newline');
+  }
 }
