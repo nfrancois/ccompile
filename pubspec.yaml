@@ -1,5 +1,5 @@
 name: ccompile
-version: 0.2.0+201311041827
+version: 0.2.0+201311062018
 author: Andrew Mezoni <andrew.mezoni@gmail.com>
 description: Library for compiling C/C++ source files from Dart scripts. The main purpose of compiling native extensions from Dart source files. It is also possible to use this to compile any other small projects.
 homepage: https://github.com/mezoni/ccompile
