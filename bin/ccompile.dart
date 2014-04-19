@@ -12,7 +12,7 @@ void main(List<String> args) {
 class Program {
   static void main(List<String> args) {
     var tool = new CcompileTool();
-    var result = tool.run();
+    var result = tool.run(args);
     exit(result);
   }
 }
@@ -36,8 +36,8 @@ class CcompileTool {
 
   ArgParser _parser;
 
-  int run() {
-    if(_parse()) {
+  int run(List<String> args) {
+    if(_parse(args)) {
       if(_prepare()) {
         return _build();
       }
@@ -46,7 +46,7 @@ class CcompileTool {
     return 1;
   }
 
-  bool _parse() {
+  bool _parse(List<String> args) {
     _parser = new ArgParser();
     _parser.addFlag('compile', abbr: 'c', defaultsTo: true,
       help: 'Compile project');
@@ -59,18 +59,16 @@ class CcompileTool {
         'yaml': 'The project format is YAML',
       });
 
-    var options = new Options();
-    if(options.arguments.length == 0) {
+    if(args.length == 0) {
       _printUsage();
       return false;
     }
 
-    var arguments = options.arguments;
-    projectArgument = arguments[0];
-    arguments.removeRange(0, 1);
+    projectArgument = args[0];
+    args.removeRange(0, 1);
     var argResults;
     try {
-      argResults = _parser.parse(arguments);
+      argResults = _parser.parse(args);
     } on FormatException catch (fe) {
       SystemUtils.writeString(fe.message, stderr);
       _printUsage();
@@ -133,7 +131,7 @@ class CcompileTool {
     return file.parent.path;
   }
 
-  String _printUsage() {
+  void _printUsage() {
     print('');
     print('Usage: ccompile.dart project [options]');
     print('Options:');
