@@ -41,7 +41,7 @@ class ProjectHelper {
 
     var map;
     if(format == 'json') {
-      map = JSON.parse(text);
+      map = JSON.encode(text);
     }
 
     if(format == 'yaml') {
