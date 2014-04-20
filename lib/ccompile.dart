@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:ccompile/src/file_finder/file_finder.dart';
 import 'package:ccompilers/ccompilers.dart';
-import 'package:mezoni_parser/mezoni_parser.dart';
+import 'package:map_parser/map_parser.dart';
 import 'package:path/path.dart' as pathos;
 import 'package:yaml/yaml.dart';
 

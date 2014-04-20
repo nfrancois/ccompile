@@ -1,7 +1,7 @@
 part of ccompile.ccompile;
 
 class ProjectParser {
-  MezoniParser _parser;
+  MapParser _parser;
 
   bool hasErrors = false;
 
@@ -15,7 +15,7 @@ class ProjectParser {
     errors = [];
     hasErrors = false;
     var project = new Project();
-    _parser = new MezoniParser(_getFormat());
+    _parser = new MapParser(_getFormat());
     _parser.parse(map, project);
     if(_parser.errors.length > 0) {
       hasErrors = true;
