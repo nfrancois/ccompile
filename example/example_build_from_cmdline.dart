@@ -129,7 +129,7 @@ class Program {
   }
 
   static String getRootScriptDirectory() {
-    return pathos.dirname(Platform.script);
+    return pathos.dirname(Platform.script.path);
   }
 
   static final String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
