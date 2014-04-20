@@ -84,7 +84,7 @@ class ProjectParser {
 
   int bits(String key, dynamic value, Project parent) {
     var error = false;
-    if(value != null) {
+    if(value != null && value is! int) {
       try {
         parent.bits = int.parse(value);
       } catch(e) {

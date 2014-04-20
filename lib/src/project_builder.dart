@@ -74,8 +74,8 @@ class ProjectBuilder {
       case 'windows':
         return new MsvcCompiler();
       default:
-        _unsupportedPlatform();
-        break;
+        _errorUnsupportedPlatform();
+        return null;
     }
   }
 
@@ -90,8 +90,8 @@ class ProjectBuilder {
       case 'windows':
         return new MsvcLinker();
       default:
-        _unsupportedPlatform();
-        break;
+        _errorUnsupportedPlatform();
+        return null;
     }
   }
 
@@ -103,7 +103,7 @@ class ProjectBuilder {
     return ['android', 'linux', 'macos', 'windows'].any((elem) => elem == platform);
   }
 
-  void _unsupportedPlatform() {
+  void _errorUnsupportedPlatform() {
     throw('Unsupported target $_platform.');
   }
 

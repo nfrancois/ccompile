@@ -1,6 +1,5 @@
 library ccompile.ccompile;
 
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'package:ccompile/src/file_finder/file_finder.dart';
