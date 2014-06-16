@@ -42,6 +42,7 @@ class Program {
         print(message);
       }
     } else {
+      print(result.stderr);
       var message = messages['error'];
       if (!message.isEmpty) {
         print(message);

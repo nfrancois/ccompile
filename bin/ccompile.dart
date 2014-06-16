@@ -6,7 +6,7 @@ import 'package:ccompile/ccompile.dart';
 import 'package:path/path.dart' as pathos;
 
 void main(List<String> args) {
-  Program.main(args);
+  Program.main(args.toList());
 }
 
 class Program {

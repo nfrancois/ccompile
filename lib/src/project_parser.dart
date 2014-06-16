@@ -90,6 +90,8 @@ class ProjectParser {
       } catch(e) {
         error = true;
       }
+    } else {
+      parent.bits = value;
     }
 
     if(!error && parent.bits != null) {
