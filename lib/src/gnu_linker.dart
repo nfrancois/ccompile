@@ -11,8 +11,10 @@ class GnuLinker implements ProjectTool {
     var settings = project.linkerSettings;
     var arguments = [];
     arguments.addAll(settings.arguments);
-    if(project.getBits() == 32) {
-      arguments.add('-m32');
+    if (_canUseM32M64Option()) {
+      if(project.getBits() == 32) {
+        arguments.add('-m32');
+      }
     }
 
     var libpaths = SystemUtils.expandEnvironmentVars(settings.libpaths);
@@ -38,5 +40,20 @@ class GnuLinker implements ProjectTool {
     });
 
     return arguments;
+  }
+
+  bool _canUseM32M64Option() {
+    switch (Platform.operatingSystem) {
+      case "linux":
+        var file = new File("/proc/cpuinfo");
+        if (!file.existsSync()) {
+          return true;
+        }
+
+        var cpuinfo = file.readAsStringSync();
+        return !cpuinfo.contains("CPU implementer");
+      default:
+        return true;
+    }
   }
 }

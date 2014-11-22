@@ -5,9 +5,9 @@ class GnuCompiler implements ProjectTool {
     var executable = project.compilerSettings.getExecutable('g++');
     var arguments = _projectToArguments(project);
     var compiler;
-    if(executable == 'g++') {
+    if (executable == 'g++') {
       compiler = new Gpp();
-    } else if(executable == 'gcc') {
+    } else if (executable == 'gcc') {
       compiler = new Gcc();
     } else {
       throw new StateError('Unsupported compiler executable $executable');
@@ -20,10 +20,12 @@ class GnuCompiler implements ProjectTool {
     var settings = project.compilerSettings;
     var arguments = ['-c'];
     arguments.addAll(settings.arguments);
-    if(project.getBits() == 32) {
-      arguments.add('-m32');
-    } else if(project.getBits() == 64) {
-      arguments.add('-m64');
+    if (_canUseM32M64Option()) {
+      if (project.getBits() == 32) {
+        arguments.add('-m32');
+      } else if (project.getBits() == 64) {
+        arguments.add('-m64');
+      }
     }
 
     var includes = SystemUtils.expandEnvironmentVars(settings.includes);
@@ -33,7 +35,7 @@ class GnuCompiler implements ProjectTool {
     });
 
     settings.defines.forEach((k, v) {
-      if(v == null) {
+      if (v == null) {
         arguments.add('-D$k');
       } else {
         arguments.add('-D$v=$k');
@@ -47,5 +49,20 @@ class GnuCompiler implements ProjectTool {
     });
 
     return arguments;
+  }
+
+  bool _canUseM32M64Option() {
+    switch (Platform.operatingSystem) {
+      case "linux":
+        var file = new File("/proc/cpuinfo");
+        if (!file.existsSync()) {
+          return true;
+        }
+
+        var cpuinfo = file.readAsStringSync();
+        return !cpuinfo.contains("CPU implementer");
+      default:
+        return true;
+    }
   }
 }
