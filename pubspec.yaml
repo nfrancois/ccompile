@@ -6,7 +6,6 @@ homepage: https://github.com/mezoni/ccompile
 dependencies:
   args: any
   ccompilers: any
-  map_parser:
-    git: https://github.com/mezoni/map_parser
+  map_parser: any
   path: any
   yaml: any
