@@ -58,9 +58,13 @@ platforms:
 
 If you want to be more powerful then I can recommend you trying to use [ccompilers][ccompilers] instead of this.
 
+Example of building a [native extension][native_extension_with_build_tools] with [build_tools][build_tools].  
+
 [ccompile]: http://pub.dartlang.org/packages/ccompile
 [ccompilers]: http://pub.dartlang.org/packages/ccompilers
 [example_build_dart]: https://github.com/mezoni/ccompile/blob/master/example/example_build.dart
 [example_use_sample_extension_dart]: https://github.com/mezoni/ccompile/blob/master/example/example_use_sample_extension.dart
 [sample_extension_dart]: https://github.com/mezoni/ccompile/blob/master/example/sample_extension.dart
 [sample_extension_yaml]: https://github.com/mezoni/ccompile/blob/master/example/sample_extension.yaml
+[native_extension_with_build_tools]: https://github.com/mezoni/native_extension_with_build_tools/blob/master/bin/makefile1.dart
+[build_tools]: https://github.com/mezoni/build_tools
