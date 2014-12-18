@@ -6,6 +6,7 @@ import 'package:ccompile/src/file_finder/file_finder.dart';
 import 'package:ccompilers/ccompilers.dart';
 import 'package:map_parser/map_parser.dart';
 import 'package:path/path.dart' as pathos;
+import 'package:system_info/system_info.dart';
 import 'package:yaml/yaml.dart';
 
 part 'src/cleaner.dart';
