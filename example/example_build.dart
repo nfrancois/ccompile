@@ -11,8 +11,7 @@ void main(List<String> args) {
 class Program {
   static void main(List<String> args) {
     var basePath = Directory.current.path;
-    var projectPath = toAbsolutePath('../example/sample_extension.yaml',
-        basePath);
+    var projectPath = toAbsolutePath('../example/sample_extension.yaml', basePath);
     var result = Program.buildProject(projectPath, {
       'start': 'Building project "$projectPath"',
       'success': 'Building complete successfully',

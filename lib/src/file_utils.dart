@@ -5,7 +5,7 @@ class FileUtils {
     var to = Platform.pathSeparator;
     var from = to == '\\' ? '/' : '\\';
 
-    if(path != null && path is String) {
+    if (path != null && path is String) {
       path = path.replaceAll(from, to);
     }
 
@@ -14,7 +14,7 @@ class FileUtils {
 
   static int readAsListSync(RandomAccessFile fp, List<int> buffer, int position) {
     fp.setPositionSync(position);
-    if(fp.positionSync() != position) {
+    if (fp.positionSync() != position) {
       return 0;
     }
 
@@ -23,8 +23,8 @@ class FileUtils {
 
   static String readAsStringSync(String filename) {
     var file = new File(filename);
-    if(!file.existsSync()) {
-      throw('File "$filename" not found.');
+    if (!file.existsSync()) {
+      throw ('File "$filename" not found.');
     }
 
     return file.readAsStringSync();

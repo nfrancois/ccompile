@@ -15,11 +15,11 @@ class Project {
   }
 
   int getBits([int defaultValue]) {
-    if(bits == 0) {
+    if (bits == 0) {
       return DartUtils.getVmBits();
     }
 
-    if(bits == null) {
+    if (bits == null) {
       return defaultValue;
     }
 

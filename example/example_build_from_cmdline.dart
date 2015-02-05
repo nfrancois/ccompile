@@ -10,8 +10,7 @@ void main(List<String> args) {
 class Program {
   static void main(List<String> args) {
     var basePath = Directory.current.path;
-    var projectPath = toAbsolutePath('../example/sample_extension.yaml',
-        basePath);
+    var projectPath = toAbsolutePath('../example/sample_extension.yaml', basePath);
     var env = 'CCOMPILE';
     var ccompile = 'ccompile.dart';
     var script = findFile(env, ccompile);
@@ -71,9 +70,7 @@ class Program {
   }
 
   static void errorFileNotFound(String env, String filename) {
-    writeString(
-        'Error: Cannot find "$filename" either in env["PATH"] nor in env["${env}"]',
-        stderr);
+    writeString('Error: Cannot find "$filename" either in env["PATH"] nor in env["${env}"]', stderr);
     exit(-1);
   }
 
@@ -138,8 +135,7 @@ class Program {
     return pathos.dirname(Platform.script.toFilePath());
   }
 
-  static final String newline = Platform.operatingSystem == 'windows' ? '\r\n' :
-      '\n';
+  static final String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
 
   static void writeString(String text, IOSink sink) {
     sink.write('$text$newline');

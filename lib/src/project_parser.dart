@@ -8,7 +8,7 @@ class ProjectParser {
   List<String> errors = [];
 
   Project parse(Map map) {
-    if(map == null || map is! Map) {
+    if (map == null || map is! Map) {
       throw new ArgumentError('map: $map');
     }
 
@@ -17,7 +17,7 @@ class ProjectParser {
     var project = new Project();
     _parser = new MapParser(_getFormat());
     _parser.parse(map, project);
-    if(_parser.errors.length > 0) {
+    if (_parser.errors.length > 0) {
       hasErrors = true;
       _parser.errors.forEach((error) {
         var msg = 'Invalid section ${error} in data.';
@@ -31,77 +31,77 @@ class ProjectParser {
   }
 
   Map<String, ParserCallback> _getFormat() {
-    Map<String, ParserCallback> format =
-      {'"bits"': bits,
-       '[clean]': clean,
-       '[clean]:"*"': list_item,
-       '{compiler}': compiler,
-       '{compiler}:[arguments]': compiler_arguments,
-       '{compiler}:[arguments]:"*"': list_item,
-       '{compiler}:{defines}': compiler_defines,
-       '{compiler}:{defines}:"*"': list_item,
-       '{compiler}:"executable"': compiler_executable,
-       '{compiler}:[includes]': compiler_includes,
-       '{compiler}:[includes]:"*"': list_item,
-       '{compiler}:[input_files]': compiler_input_files,
-       '{compiler}:[input_files]:"*"': list_item,
-       '{linker}': linker,
-       '{linker}:[arguments]': linker_arguments,
-       '{linker}:[arguments]:"*"': list_item,
-       '{linker}:[input_files]': linker_input_files,
-       '{linker}:[input_files]:"*"': list_item,
-       '{linker}:[libpaths]': linker_libpaths,
-       '{linker}:[libpaths]:"*"': list_item,
-       '{linker}:"output_file"': linker_output_file,
-       '{platforms}': platforms,
-       '{platforms}:{*}': platform,
+    Map<String, ParserCallback> format = {
+      '"bits"': bits,
+      '[clean]': clean,
+      '[clean]:"*"': list_item,
+      '{compiler}': compiler,
+      '{compiler}:[arguments]': compiler_arguments,
+      '{compiler}:[arguments]:"*"': list_item,
+      '{compiler}:{defines}': compiler_defines,
+      '{compiler}:{defines}:"*"': list_item,
+      '{compiler}:"executable"': compiler_executable,
+      '{compiler}:[includes]': compiler_includes,
+      '{compiler}:[includes]:"*"': list_item,
+      '{compiler}:[input_files]': compiler_input_files,
+      '{compiler}:[input_files]:"*"': list_item,
+      '{linker}': linker,
+      '{linker}:[arguments]': linker_arguments,
+      '{linker}:[arguments]:"*"': list_item,
+      '{linker}:[input_files]': linker_input_files,
+      '{linker}:[input_files]:"*"': list_item,
+      '{linker}:[libpaths]': linker_libpaths,
+      '{linker}:[libpaths]:"*"': list_item,
+      '{linker}:"output_file"': linker_output_file,
+      '{platforms}': platforms,
+      '{platforms}:{*}': platform,
 
-       '{platforms}:{*}:"bits"': bits,
-       '{platforms}:{*}:[clean]': clean,
-       '{platforms}:{*}:[clean]:"*"': list_item,
-       '{platforms}:{*}:{compiler}': compiler,
-       '{platforms}:{*}:{compiler}:[arguments]': compiler_arguments,
-       '{platforms}:{*}:{compiler}:[arguments]:"*"': list_item,
-       '{platforms}:{*}:{compiler}:{defines}': compiler_defines,
-       '{platforms}:{*}:{compiler}:{defines}:"*"': map_item,
-       '{platforms}:{*}:{compiler}:"executable"': compiler_executable,
-       '{platforms}:{*}:{compiler}:[includes]': compiler_includes,
-       '{platforms}:{*}:{compiler}:[includes]:"*"': list_item,
-       '{platforms}:{*}:{compiler}:[input_files]': compiler_input_files,
-       '{platforms}:{*}:{compiler}:[input_files]:"*"': list_item,
-       '{platforms}:{*}:{linker}': linker,
-       '{platforms}:{*}:{linker}:[arguments]': linker_arguments,
-       '{platforms}:{*}:{linker}:[arguments]:"*"': list_item,
-       '{platforms}:{*}:{linker}:[input_files]': linker_input_files,
-       '{platforms}:{*}:{linker}:[input_files]:"*"': list_item,
-       '{platforms}:{*}:{linker}:[libpaths]': linker_libpaths,
-       '{platforms}:{*}:{linker}:[libpaths]:"*"': list_item,
-       '{platforms}:{*}:{linker}:"output_file"': linker_output_file,
-       };
+      '{platforms}:{*}:"bits"': bits,
+      '{platforms}:{*}:[clean]': clean,
+      '{platforms}:{*}:[clean]:"*"': list_item,
+      '{platforms}:{*}:{compiler}': compiler,
+      '{platforms}:{*}:{compiler}:[arguments]': compiler_arguments,
+      '{platforms}:{*}:{compiler}:[arguments]:"*"': list_item,
+      '{platforms}:{*}:{compiler}:{defines}': compiler_defines,
+      '{platforms}:{*}:{compiler}:{defines}:"*"': map_item,
+      '{platforms}:{*}:{compiler}:"executable"': compiler_executable,
+      '{platforms}:{*}:{compiler}:[includes]': compiler_includes,
+      '{platforms}:{*}:{compiler}:[includes]:"*"': list_item,
+      '{platforms}:{*}:{compiler}:[input_files]': compiler_input_files,
+      '{platforms}:{*}:{compiler}:[input_files]:"*"': list_item,
+      '{platforms}:{*}:{linker}': linker,
+      '{platforms}:{*}:{linker}:[arguments]': linker_arguments,
+      '{platforms}:{*}:{linker}:[arguments]:"*"': list_item,
+      '{platforms}:{*}:{linker}:[input_files]': linker_input_files,
+      '{platforms}:{*}:{linker}:[input_files]:"*"': list_item,
+      '{platforms}:{*}:{linker}:[libpaths]': linker_libpaths,
+      '{platforms}:{*}:{linker}:[libpaths]:"*"': list_item,
+      '{platforms}:{*}:{linker}:"output_file"': linker_output_file,
+    };
 
     return format;
   }
 
   int bits(String key, dynamic value, Project parent) {
     var error = false;
-    if(value != null && value is! int) {
+    if (value != null && value is! int) {
       try {
         parent.bits = int.parse(value);
-      } catch(e) {
+      } catch (e) {
         error = true;
       }
     } else {
       parent.bits = value;
     }
 
-    if(!error && parent.bits != null) {
+    if (!error && parent.bits != null) {
       var validValues = [0, 32, 64];
-      if(!validValues.any((e) => e == parent.bits)) {
+      if (!validValues.any((e) => e == parent.bits)) {
         error = true;
       }
     }
 
-    if(error) {
+    if (error) {
       _errorIllegalValue(key, value, ['0', '32', '64']);
     }
 
@@ -109,7 +109,7 @@ class ProjectParser {
   }
 
   List clean(String key, dynamic value, Project parent) {
-    if(parent.clean == null) {
+    if (parent.clean == null) {
       parent.clean = [];
     }
 
@@ -167,7 +167,7 @@ class ProjectParser {
   }
 
   Project platform(String key, dynamic value, Project parent) {
-    if(key != Platform.operatingSystem) {
+    if (key != Platform.operatingSystem) {
       return new Project();
     }
 
@@ -186,10 +186,10 @@ class ProjectParser {
 
   void _errorIllegalValue(String name, value, List<String> validValues) {
     var message = 'Project parser error: Illegal "$name" value "$value"';
-    if(validValues.length > 0) {
+    if (validValues.length > 0) {
       message = '$message. Valid values are ${validValues.join(', ')}';
     }
 
-    throw(message);
+    throw (message);
   }
 }

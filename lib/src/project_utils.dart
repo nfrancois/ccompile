@@ -4,27 +4,27 @@ class ProjectHelper {
   static Project create(Map map) {
     var parser = new ProjectParser();
     var project = parser.parse(map);
-    if(parser.hasErrors) {
+    if (parser.hasErrors) {
       var nl = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
       var errors = parser.errors.join(nl);
-      throw('During the parsing of the project there was an error(s):$nl$errors');
+      throw ('During the parsing of the project there was an error(s):$nl$errors');
     }
 
     return project;
   }
 
   static Project load(String filepath, [String format]) {
-    if(filepath == null || filepath.isEmpty) {
+    if (filepath == null || filepath.isEmpty) {
       throw new ArgumentError('filename: $filepath');
     }
 
-    if(format != null && format != 'json' && format != 'yaml') {
+    if (format != null && format != 'json' && format != 'yaml') {
       throw new ArgumentError('format: $format');
     }
 
-    if(format == null) {
+    if (format == null) {
       var ext = pathos.extension(filepath);
-      switch(ext.toLowerCase()) {
+      switch (ext.toLowerCase()) {
         case '.json':
           format = 'json';
           break;
@@ -33,23 +33,23 @@ class ProjectHelper {
           format = 'yaml';
           break;
         default:
-          throw('Unrecognized format of file "$filepath".');
+          throw ('Unrecognized format of file "$filepath".');
       }
     }
 
     var text = FileUtils.readAsStringSync(filepath);
 
     var map;
-    if(format == 'json') {
+    if (format == 'json') {
       map = JSON.encode(text);
     }
 
-    if(format == 'yaml') {
+    if (format == 'yaml') {
       map = loadYaml(text);
     }
 
-    if(map is! Map) {
-      throw('Invalid project structure. Project must be a Map.');
+    if (map is! Map) {
+      throw ('Invalid project structure. Project must be a Map.');
     }
 
     return create(map);

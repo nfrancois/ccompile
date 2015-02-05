@@ -2,6 +2,45 @@ part of ccompile.ccompile;
 
 class GnuCompiler implements ProjectTool {
   ProcessResult run(Project project, [String workingDirectory]) {
+    var settings = project.compilerSettings;
+    var arguments = settings.arguments;
+    var define = settings.defines;
+    var includes = SystemUtils.expandEnvironmentVars(settings.includes);
+    includes = includes.map((elem) => FileUtils.correctPathSeparators(elem));
+    var include = <String>[];
+    includes.forEach((file) {
+      include.add('$file');
+    });
+
+    var inputFiles = SystemUtils.expandEnvironmentVars(settings.inputFiles);
+    inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
+    var input = <String>[];
+    inputFiles.forEach((file) {
+      input.add('$file');
+    });
+
+    int bits;
+    if (_canUseM32M64Option()) {
+      if (project.getBits() == 32) {
+        bits = 32;
+      } else if (project.getBits() == 64) {
+        bits = 64;
+      }
+    }
+
+    var executable = project.compilerSettings.getExecutable('g++');
+    if (executable == 'g++') {
+      var compiler = new GnuCppCompiler();
+      return compiler.compile(input, arguments: arguments, define: define, include: include, workingDirectory: workingDirectory);
+    } else if (executable == 'gcc') {
+      var compiler = new GnuCCompiler();
+      return compiler.compile(input, arguments: arguments, define: define, include: include, workingDirectory: workingDirectory);
+    } else {
+      throw new StateError('Unsupported compiler executable $executable');
+    }
+  }
+
+  ProcessResult run_Old(Project project, [String workingDirectory]) {
     var executable = project.compilerSettings.getExecutable('g++');
     var arguments = _projectToArguments(project);
     var compiler;
@@ -14,6 +53,21 @@ class GnuCompiler implements ProjectTool {
     }
 
     return compiler.run(arguments, workingDirectory: workingDirectory);
+  }
+
+  bool _canUseM32M64Option() {
+    switch (Platform.operatingSystem) {
+      case "linux":
+        var file = new File("/proc/cpuinfo");
+        if (!file.existsSync()) {
+          return true;
+        }
+
+        var cpuinfo = file.readAsStringSync();
+        return !cpuinfo.contains("CPU implementer");
+      default:
+        return true;
+    }
   }
 
   List<String> _projectToArguments(Project project) {
@@ -49,20 +103,5 @@ class GnuCompiler implements ProjectTool {
     });
 
     return arguments;
-  }
-
-  bool _canUseM32M64Option() {
-    switch (Platform.operatingSystem) {
-      case "linux":
-        var file = new File("/proc/cpuinfo");
-        if (!file.existsSync()) {
-          return true;
-        }
-
-        var cpuinfo = file.readAsStringSync();
-        return !cpuinfo.contains("CPU implementer");
-      default:
-        return true;
-    }
   }
 }

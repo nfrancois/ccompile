@@ -2,6 +2,28 @@ part of ccompile.ccompile;
 
 class MsvcCompiler implements ProjectTool {
   ProcessResult run(Project project, [String workingDirectory]) {
+    var settings = project.compilerSettings;
+    var arguments = settings.arguments;
+    var define = settings.defines;
+    var includes = SystemUtils.expandEnvironmentVars(settings.includes);
+    includes = includes.map((elem) => FileUtils.correctPathSeparators(elem));
+    var include = <String>[];
+    includes.forEach((file) {
+      include.add('$file');
+    });
+
+    var inputFiles = SystemUtils.expandEnvironmentVars(settings.inputFiles);
+    inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
+    var input = <String>[];
+    inputFiles.forEach((file) {
+      input.add('$file');
+    });
+
+    var compiler = new lib_ccompilers.MsCppCompiler(project.getBits());
+    return compiler.compile(input, arguments: arguments, define: define, include: include, workingDirectory: workingDirectory);
+  }
+
+  ProcessResult run_old(Project project, [String workingDirectory]) {
     var bits = project.getBits(WindowsUtils.getSystemBits());
     var arguments = _projectToArguments(project);
     var compiler = new Msvc(bits: bits);
@@ -25,7 +47,7 @@ class MsvcCompiler implements ProjectTool {
     });
 
     settings.defines.forEach((k, v) {
-      if(v == null) {
+      if (v == null) {
         arguments.add('/D$k');
       } else {
         arguments.add('/D$v=$k');

@@ -9,7 +9,7 @@ class ProjectBuilder {
 
   ProcessResult build(Project project, [String workingDirectory]) {
     var result = compile(project, workingDirectory);
-    if(result.exitCode != 0) {
+    if (result.exitCode != 0) {
       return result;
     }
 
@@ -41,17 +41,17 @@ class ProjectBuilder {
   }
 
   ProcessResult customBuild(Project project, [String workingDirectory, bool compile = true, bool link = true, bool clean = true]) {
-    if(!compile) {
+    if (!compile) {
       return new ProjectToolResult();
     }
 
     var result = this.compile(project, workingDirectory);
-    if(result.exitCode != 0 || !link) {
+    if (result.exitCode != 0 || !link) {
       return result;
     }
 
     result = this.link(project, workingDirectory);
-    if(!clean) {
+    if (!clean) {
       return result;
     }
 
@@ -64,7 +64,7 @@ class ProjectBuilder {
   }
 
   ProjectTool getCompiler() {
-    switch(_platform) {
+    switch (_platform) {
       case 'android':
         return new GnuCompiler();
       case 'linux':
@@ -80,7 +80,7 @@ class ProjectBuilder {
   }
 
   ProjectTool getLinker() {
-    switch(_platform) {
+    switch (_platform) {
       case 'android':
         return new GnuLinker();
       case 'linux':
@@ -104,18 +104,18 @@ class ProjectBuilder {
   }
 
   void _errorUnsupportedPlatform() {
-    throw('Unsupported target $_platform.');
+    throw ('Unsupported target $_platform.');
   }
 
   void _writeResult(ProcessResult result) {
     var message = result.stdout.toString();
-    if(!message.isEmpty) {
+    if (!message.isEmpty) {
       print(message);
       //SystemUtils.writeString(message, stdout);
     }
 
     message = result.stderr.toString();
-    if(!message.isEmpty) {
+    if (!message.isEmpty) {
       SystemUtils.writeString(message, stderr);
     }
   }

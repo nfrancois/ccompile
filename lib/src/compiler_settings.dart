@@ -12,7 +12,7 @@ class CompilerSettings {
   List<String> inputFiles = [];
 
   String getExecutable([String defaultValue]) {
-    if(executable == null) {
+    if (executable == null) {
       return defaultValue;
     }
 
