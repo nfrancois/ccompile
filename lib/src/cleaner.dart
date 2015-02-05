@@ -17,7 +17,7 @@ class Cleaner implements ProjectTool {
           file = lib_path.join(workingDirectory, file);
         }
 
-        file = FileUtils.correctPathSeparators(file);
+        file = file.replaceAll("\\", "/");
         lib_file_utils.FileUtils.rm([file], force: true);
       }
     }
