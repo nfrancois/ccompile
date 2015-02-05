@@ -18,7 +18,7 @@ class MsvcLinker implements ProjectTool {
     inputFiles.forEach((file) {
       var ext = pathos.extension(file);
       if (ext.isEmpty) {
-        file = '$file.o';
+        file = '$file.obj';
       }
 
       input.add('$file');
