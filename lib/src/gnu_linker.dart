@@ -16,7 +16,7 @@ class GnuLinker implements ProjectTool {
     inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
     var input = <String>[];
     inputFiles.forEach((file) {
-      var ext = pathos.extension(file);
+      var ext = lib_path.extension(file);
       if (ext.isEmpty) {
         file = '$file.o';
       }
@@ -33,7 +33,7 @@ class GnuLinker implements ProjectTool {
       }
     }
 
-    var linker = new lib_ccompilers.GnuLinker(bits);
+    var linker = new lib_ccompilers.GnuLinker(bits: bits, logger: ProjectBuilder.logger);
     return linker.link(input, arguments: arguments, libpaths: paths, output: output, workingDirectory: workingDirectory);
   }
 
@@ -82,7 +82,7 @@ class GnuLinker implements ProjectTool {
     var inputFiles = SystemUtils.expandEnvironmentVars(settings.inputFiles);
     inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
     inputFiles.forEach((inputFile) {
-      var ext = pathos.extension(inputFile);
+      var ext = lib_path.extension(inputFile);
       if (ext.isEmpty) {
         inputFile = '$inputFile.o';
       }

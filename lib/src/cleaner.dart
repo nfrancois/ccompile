@@ -10,13 +10,17 @@ class Cleaner implements ProjectTool {
       workingDirectory = Directory.current.path;
     }
 
-    var files = FileFinder.find(workingDirectory, project.clean);
-    files.forEach((file) {
-      var fp = new File(file);
-      if (fp.existsSync()) {
-        fp.deleteSync();
+    var files = <String>[];
+    if (project.clean != null) {
+      for (var file in project.clean) {
+        if (workingDirectory != null) {
+          file = lib_path.join(workingDirectory, file);
+        }
+
+        file = FileUtils.correctPathSeparators(file);
+        lib_file_utils.FileUtils.rm([file], force: true);
       }
-    });
+    }
 
     return new ProjectToolResult();
   }

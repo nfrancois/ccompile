@@ -23,7 +23,7 @@ class ProjectHelper {
     }
 
     if (format == null) {
-      var ext = pathos.extension(filepath);
+      var ext = lib_path.extension(filepath);
       switch (ext.toLowerCase()) {
         case '.json':
           format = 'json';

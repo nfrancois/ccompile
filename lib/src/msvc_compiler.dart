@@ -19,7 +19,8 @@ class MsvcCompiler implements ProjectTool {
       input.add('$file');
     });
 
-    var compiler = new lib_ccompilers.MsCppCompiler(project.getBits());
+    var bits = project.getBits();
+    var compiler = new lib_ccompilers.MsCppCompiler(bits: bits, logger: ProjectBuilder.logger);
     return compiler.compile(input, arguments: arguments, define: define, include: include, workingDirectory: workingDirectory);
   }
 

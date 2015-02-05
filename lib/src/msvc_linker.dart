@@ -16,7 +16,7 @@ class MsvcLinker implements ProjectTool {
     inputFiles = inputFiles.map((elem) => FileUtils.correctPathSeparators(elem));
     var input = <String>[];
     inputFiles.forEach((file) {
-      var ext = pathos.extension(file);
+      var ext = lib_path.extension(file);
       if (ext.isEmpty) {
         file = '$file.obj';
       }
@@ -24,7 +24,8 @@ class MsvcLinker implements ProjectTool {
       input.add('$file');
     });
 
-    var linker = new MsLinker(project.getBits());
+    var bits = project.getBits();
+    var linker = new MsLinker(bits: bits, logger: ProjectBuilder.logger);
     return linker.link(input, arguments: arguments, libpaths: paths, output: output, workingDirectory: workingDirectory);
   }
 

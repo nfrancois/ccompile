@@ -1,6 +1,8 @@
 part of ccompile.ccompile;
 
 class ProjectBuilder {
+  static Logger logger;
+
   String _platform;
 
   ProjectBuilder() {

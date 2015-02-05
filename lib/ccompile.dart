@@ -2,11 +2,13 @@ library ccompile.ccompile;
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:ccompile/src/file_finder/file_finder.dart';
-import 'package:ccompilers/ccompilers.dart';
+
 import 'package:ccompilers/ccompilers.dart' as lib_ccompilers;
+import 'package:ccompilers/ccompilers.dart';
+import 'package:file_utils/file_utils.dart' as lib_file_utils;
+import 'package:logging/logging.dart';
 import 'package:map_parser/map_parser.dart';
-import 'package:path/path.dart' as pathos;
+import 'package:path/path.dart' as lib_path;
 import 'package:system_info/system_info.dart';
 import 'package:yaml/yaml.dart';
 

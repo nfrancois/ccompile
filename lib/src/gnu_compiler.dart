@@ -30,10 +30,10 @@ class GnuCompiler implements ProjectTool {
 
     var executable = project.compilerSettings.getExecutable('g++');
     if (executable == 'g++') {
-      var compiler = new GnuCppCompiler();
+      var compiler = new GnuCppCompiler(bits: bits, logger: ProjectBuilder.logger);
       return compiler.compile(input, arguments: arguments, define: define, include: include, workingDirectory: workingDirectory);
     } else if (executable == 'gcc') {
-      var compiler = new GnuCCompiler();
+      var compiler = new GnuCCompiler(bits: bits, logger: ProjectBuilder.logger);
       return compiler.compile(input, arguments: arguments, define: define, include: include, workingDirectory: workingDirectory);
     } else {
       throw new StateError('Unsupported compiler executable $executable');
