@@ -13,7 +13,7 @@ class Program {
   static void main(List<String> args) {
     var tool = new CcompileTool();
     var result = tool.run(args);
-    exit(result);
+    exitCode = result;
   }
 }
 
